@@ -11,6 +11,10 @@ export default {
 
     theme: {
         extend: {
+            backgroundImage: {
+                // Tambahkan custom background di sini
+                'custom-bg': "url('/storage/cover_buku/LOL.webp')",
+            },
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
