@@ -18,9 +18,18 @@ class BookSeeder extends Seeder
             "author" => "GTA",
             "year" => 2024,
             "publisher" => "UNSUR Mengantuk",
-            "city" => "Cianjir",
-            "cover" => "public/cover.jpg",
+            "city" => "Cianjur",
+            "cover" => "cover_buku_1734253233.jpg",
             "bookshelf_id" => 1
+        ]);
+        Book::create([
+            "title" => "Genshin",
+            "author" => "Mihoyo",
+            "year" => 2020,
+            "publisher" => "GenshinLab",
+            "city" => "Shianghai",
+            "cover" => "cover_buku_1734001258.jpg",
+            "bookshelf_id" => 2
         ]);
     }
 }

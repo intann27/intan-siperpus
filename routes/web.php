@@ -2,7 +2,42 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookController;
+use App\Models\Book;
+use App\Models\Bookshelf;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/books/search', function () {
+    // Ambil query pencarian dari input
+    $query = request('query');
+
+    // Cari buku berdasarkan judul, penulis, atau rak buku (code atau name)
+    $books = Book::with('bookshelf')
+        ->where('title', 'like', "%{$query}%")
+        ->orWhere('author', 'like', "%{$query}%")
+        ->orWhereHas('bookshelf', function ($queryBuilder) use ($query) {
+            $queryBuilder->where('name', 'like', "%{$query}%")
+                         ->orWhere('code', 'like', "%{$query}%");
+        })
+        ->get(); // Dapatkan hasil pencarian
+
+    // Persiapkan data hasil pencarian untuk dikirim ke view
+    $books_filter = [];
+    $no = 1;
+    foreach ($books as $book) {
+        $books_filter[] = [
+            'id' => $book->id,
+            'title' => $book->title,
+            'author' => $book->author,
+            'year' => $book->year,
+            'publisher' => $book->publisher,
+            'city' => $book->city,
+            'cover' => asset('storage/cover_buku/' . $book->cover),
+            'bookshelf' => $book->bookshelf->code . '-' . $book->bookshelf->name
+        ];
+    }
+
+    return response()->json($books_filter);
+});
 
 Route::get('/', function () {
     return view('welcome');
@@ -11,6 +46,7 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -29,5 +65,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/books/export', [BookController::class, 'export'])->name('book.export');
     Route::post('/books/import', [BookController::class, 'import'])->name('book.import');
 });
+
 
 require __DIR__ . '/auth.php';
